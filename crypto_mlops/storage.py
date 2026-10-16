@@ -48,3 +48,24 @@ def read_csv(file_key):
     if file_exists(data_bucket, file_key):
         return pd.read_csv(f"s3://{data_bucket}/{file_key}")
     return None
+
+
+def list_months(symbol, timeframe):
+    prefix = get_symbol_base(symbol, timeframe)
+    response = s3.list_objects_v2(Bucket=data_bucket, Prefix=prefix, Delimiter="/")
+    return sorted(
+        [
+            p["Prefix"][len(prefix) :].removeprefix("month=").rstrip("/")
+            for p in response.get("CommonPrefixes", [])
+        ]
+    )
+
+
+def read_monthly_ohlcv(symbol, timeframe, n_months: int | None = None):
+    file_base_key = get_symbol_base(symbol, timeframe)
+    months = list_months(symbol, timeframe)
+    if n_months is not None:
+        months = months[-n_months:]
+    return [
+        read_csv(get_month_ohlcv_file_key(file_base_key, month)) for month in months
+    ]
