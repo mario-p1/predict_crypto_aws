@@ -47,7 +47,7 @@ Resources:
         S3Bucket: !Ref CodeBucket
         S3Key: fetch_data_function.zip
       Role: !GetAtt FetchDataFunctionRole.Arn
-      Handler: fetch_data_function.lambda_handler
+      Handler: crypto_mlops.fetch_data_function.lambda_handler
       Runtime: python3.14
       Timeout: 600
       MemorySize: 512
