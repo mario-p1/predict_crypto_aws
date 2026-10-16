@@ -24,8 +24,8 @@ def lambda_handler(event, context):
         symbol = event["symbol"]
         since = event.get("since", "last")
         timeframe = event.get("timeframe", "5m")
-        fetch_candles = int(event.get("fetch_candles", 720))
         request_limit = 1000
+        fetch_candles = int(event.get("fetch_candles", request_limit))
 
         file_base_key = f"raw/symbol={symbol.replace('/', '_')}/timeframe={timeframe}/"
         state_file_key = f"{file_base_key}state.json"
@@ -51,27 +51,32 @@ def lambda_handler(event, context):
             print(f"Continuing from timestamp {since}")
 
         ex = ccxt.binance()
+        parsed_timeframe = ex.parse_timeframe(timeframe) * 1000
         fetched = 0
         affected_files = set()
 
         while fetched < fetch_candles:
-            limit = min(request_limit, fetch_candles - fetched)
+            current_binance_time = int(ex.fetch_time())  # type: ignore
+
+            print(f"Current Binance time: {timestamp_to_str(current_binance_time)}")
+
+            end_time = (current_binance_time // parsed_timeframe - 1) * parsed_timeframe
+
             print(
-                f"Fetching candles from {timestamp_to_str(since)}, limit {limit}, fetched {fetched}/{fetch_candles}"
+                f"Fetching candles from {timestamp_to_str(since)} up to {timestamp_to_str(end_time)}, fetched {fetched}/{fetch_candles}"
             )
+
             candles = ex.fetch_ohlcv(
                 symbol,
                 timeframe=timeframe,
-                limit=limit,
+                limit=request_limit,
                 since=since,
+                params={"endTime": end_time},
             )
 
-            if len(candles) <= 1:
+            if len(candles) < 1:
                 print("No more candles to fetch")
                 break
-
-            # Remove the last candle as it may be incomplete
-            candles.pop(-1)
 
             fetched += len(candles)
 
@@ -81,9 +86,9 @@ def lambda_handler(event, context):
             df["month"] = pd.to_datetime(df["timestamp"], unit="ms").dt.strftime(
                 "%Y-%m"
             )
-            # df["datetime"] = pd.to_datetime(df["timestamp"], unit="ms").dt.strftime(
-            #     "%Y-%m-%d %H:%M:%S"
-            # )
+            df["datetime"] = pd.to_datetime(df["timestamp"], unit="ms").dt.strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
             df = df.set_index("timestamp")
 
             months = df["month"].unique()
