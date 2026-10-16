@@ -1,4 +1,4 @@
-from src.crypto_mlops.fetch_data_function import lambda_handler
+from crypto_mlops.fetch_data_function import lambda_handler
 
 
 def main():

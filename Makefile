@@ -1,7 +1,7 @@
 -include .env
 export
 
-SRC := $(shell find src -name '*.py')
+SRC := $(shell find crypto_mlops -name '*.py')
 .DELETE_ON_ERROR:
 
 .PHONY: all
@@ -27,7 +27,7 @@ build/lambda_base.zip: uv.lock
 
 build/lambda.zip: build/lambda_base.zip $(SRC)
 	cp build/lambda_base.zip build/lambda.zip
-	cd src && zip -qr ../build/lambda.zip crypto_mlops -x '*__pycache__*'
+	zip -qr build/lambda.zip crypto_mlops -x '*__pycache__*'
 
 .PHONY: deploy
 deploy: build/lambda.zip
