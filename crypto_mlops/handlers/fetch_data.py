@@ -14,7 +14,7 @@ def lambda_handler(event, context):
         request_limit = 1000
         fetch_candles = int(event.get("fetch_candles", request_limit))
 
-        file_base_key = storage.get_symbol_base(symbol, timeframe)
+        series_prefix = storage.get_series_prefix(symbol, timeframe)
 
         print(
             f"Fetching data for {symbol}, timeframe {timeframe}, since {since}, "
@@ -22,7 +22,7 @@ def lambda_handler(event, context):
         )
 
         if since == "last":
-            state = storage.read_state(symbol, timeframe)
+            state = storage.read_state(series_prefix)
             if state is not None:
                 since = int(state["last_timestamp"]) + 1
                 print(
@@ -72,7 +72,7 @@ def lambda_handler(event, context):
             months = df["month"].unique()
 
             for month in months:
-                file_key = storage.get_month_ohlcv_file_key(file_base_key, month)
+                file_key = storage.get_month_ohlcv_file_key(series_prefix, month)
 
                 df_to_save = df[df["month"] == month].copy()
                 existing_df = storage.read_csv(file_key)
@@ -90,7 +90,7 @@ def lambda_handler(event, context):
 
                 # Save last timestamp
                 last_timestamp = df_to_save["timestamp"].max()
-                storage.write_state(symbol, timeframe, last_timestamp)
+                storage.write_state(series_prefix, last_timestamp)
                 affected_files.add(file_key)
 
                 since = last_timestamp + 1
