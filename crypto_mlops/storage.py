@@ -4,8 +4,6 @@ import os
 import boto3
 import pandas as pd
 
-from crypto_mlops import utils
-
 s3 = boto3.client("s3")
 data_bucket = os.environ["DATA_BUCKET"]
 
