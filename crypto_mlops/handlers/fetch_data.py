@@ -44,13 +44,11 @@ def lambda_handler(event, context):
 
         ex = exchange.create_exchange()
         parsed_timeframe = ex.parse_timeframe(timeframe) * 1000
+        end_time = exchange.get_end_time(ex, parsed_timeframe)
 
         fetched = 0
         affected_files = set()
-
         while fetched < fetch_candles:
-            end_time = exchange.get_end_time(ex, parsed_timeframe)
-
             print(
                 f"Fetching candles from {utils.timestamp_to_str(since)} up to "
                 f"{utils.timestamp_to_str(end_time)}, "
