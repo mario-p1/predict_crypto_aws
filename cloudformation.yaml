@@ -63,38 +63,38 @@ Resources:
         Variables:
           DATA_BUCKET: !Ref DataBucket
 
-  SageMakerExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - sagemaker.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+  # SageMakerExecutionRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             Service:
+  #               - sagemaker.amazonaws.com
+  #           Action:
+  #             - sts:AssumeRole
+  #     ManagedPolicyArns:
+  #       - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
 
-  SageMakerDomain:
-    Type: AWS::SageMaker::Domain
-    Properties:
-      DomainName: cryptomlops-domain
-      AuthMode: IAM
-      VpcId: !Ref VpcId
-      SubnetIds: !Ref SubnetIds
-      DefaultUserSettings:
-        ExecutionRole: !GetAtt SageMakerExecutionRole.Arn
-        JupyterLabAppSettings:
-          AppLifecycleManagement:
-            IdleSettings:
-              LifecycleManagement: ENABLED
-              IdleTimeoutInMinutes: 60
+  # SageMakerDomain:
+  #   Type: AWS::SageMaker::Domain
+  #   Properties:
+  #     DomainName: cryptomlops-domain
+  #     AuthMode: IAM
+  #     VpcId: !Ref VpcId
+  #     SubnetIds: !Ref SubnetIds
+  #     DefaultUserSettings:
+  #       ExecutionRole: !GetAtt SageMakerExecutionRole.Arn
+  #       JupyterLabAppSettings:
+  #         AppLifecycleManagement:
+  #           IdleSettings:
+  #             LifecycleManagement: ENABLED
+  #             IdleTimeoutInMinutes: 60
 
-  SageMakerUserProfile:
-    Type: AWS::SageMaker::UserProfile
-    Properties:
-      DomainId: !Ref SageMakerDomain
-      UserProfileName: cryptomlops-user
+  # SageMakerUserProfile:
+  #   Type: AWS::SageMaker::UserProfile
+  #   Properties:
+  #     DomainId: !Ref SageMakerDomain
+  #     UserProfileName: cryptomlops-user
