@@ -87,6 +87,11 @@ Resources:
       SubnetIds: !Ref SubnetIds
       DefaultUserSettings:
         ExecutionRole: !GetAtt SageMakerExecutionRole.Arn
+        JupyterLabAppSettings:
+          AppLifecycleManagement:
+            IdleSettings:
+              LifecycleManagement: ENABLED
+              IdleTimeoutInMinutes: 60
 
   SageMakerUserProfile:
     Type: AWS::SageMaker::UserProfile
