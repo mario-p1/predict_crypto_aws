@@ -5,6 +5,14 @@ Parameters:
     Type: String
     Description: S3 bucket name where the code is stored
 
+  VpcId:
+    Type: String
+    Description: VPC ID for the SageMaker domain
+
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: List of subnet IDs for the SageMaker domain
+
 Resources:
   DataBucket:
     Type: AWS::S3::Bucket
@@ -54,3 +62,34 @@ Resources:
       Environment:
         Variables:
           DATA_BUCKET: !Ref DataBucket
+
+  SageMakerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - sagemaker.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+
+  SageMakerDomain:
+    Type: AWS::SageMaker::Domain
+    Properties:
+      DomainName: cryptomlops-domain
+      AuthMode: IAM
+      VpcId: !Ref VpcId
+      SubnetIds: !Ref SubnetIds
+      DefaultUserSettings:
+        ExecutionRole: !GetAtt SageMakerExecutionRole.Arn
+
+  SageMakerUserProfile:
+    Type: AWS::SageMaker::UserProfile
+    Properties:
+      DomainId: !Ref SageMakerDomain
+      UserProfileName: cryptomlops-user
