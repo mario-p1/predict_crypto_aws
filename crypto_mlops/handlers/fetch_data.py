@@ -97,7 +97,7 @@ def lambda_handler(event, context):
             "result": {
                 "affected_files": list(affected_files),
                 "total_fetched": fetched,
-                "last_timestamp": since - 1,
+                "last_timestamp": utils.timestamp_to_str(since - 1),
             },
         }
     except Exception as e:  # noqa: BLE001
