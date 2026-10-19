@@ -73,10 +73,9 @@ def lambda_handler(event, context):
                 file_key = storage.get_month_ohlcv_file_key(series_prefix, month)
 
                 df_to_save = df[df["month"] == month].copy()
-                existing_df = storage.read_csv(file_key)
 
-                # If file already exists, append to it
-                if existing_df is not None:
+                if storage.file_exists(storage.data_bucket, file_key):
+                    existing_df = storage.read_csv(file_key)
                     df_to_save = pd.concat([existing_df, df_to_save])
 
                 # Save only the required columns
