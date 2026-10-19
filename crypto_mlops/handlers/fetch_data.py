@@ -87,7 +87,7 @@ def lambda_handler(event, context):
                 storage.write_csv(file_key, df_to_save, index=False)
 
                 # Save last timestamp
-                last_timestamp = df_to_save["timestamp"].max()
+                last_timestamp = int(df_to_save["timestamp"].max())
                 storage.write_state(series_prefix, last_timestamp)
                 affected_files.add(file_key)
 
