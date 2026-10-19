@@ -8,12 +8,12 @@ dependencies = [
     "boto3>=1.43.105",
     "botocore[crt]>=1.43.105",
     "ccxt>=4.5.84",
-    "notebook>=7.6.3",
     "pandas>=3.0.6",
     "s3fs>=2026.9.0",
 ]
 
 [dependency-groups]
 dev = [
+    "notebook>=7.6.3",
     "ruff>=0.17.1",
 ]
