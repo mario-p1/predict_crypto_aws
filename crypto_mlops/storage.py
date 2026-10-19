@@ -43,9 +43,16 @@ def write_state(series_prefix, last_timestamp):
 
 
 def read_csv(file_key):
-    if file_exists(data_bucket, file_key):
-        return pd.read_csv(f"s3://{data_bucket}/{file_key}")
-    return None
+    obj = s3.get_object(Bucket=data_bucket, Key=file_key)
+    return pd.read_csv(obj["Body"])
+
+
+def write_csv(file_key, df, index: bool = True):
+    s3.put_object(
+        Bucket=data_bucket,
+        Key=file_key,
+        Body=df.to_csv(index=index),
+    )
 
 
 def list_months(series_prefix):

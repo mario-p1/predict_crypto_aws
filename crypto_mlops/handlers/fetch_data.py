@@ -84,7 +84,7 @@ def lambda_handler(event, context):
                     ["timestamp", "open", "high", "low", "close", "volume"]
                 ].copy()
 
-                df_to_save.to_csv(f"s3://{storage.data_bucket}/{file_key}", index=False)
+                storage.write_csv(file_key, df_to_save, index=False)
 
                 # Save last timestamp
                 last_timestamp = df_to_save["timestamp"].max()
